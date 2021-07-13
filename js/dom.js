@@ -20,6 +20,7 @@ function makeBook(title, author, year, isCompleted){
     const section = document.createElement("article");
     section.classList.add("book_item");
     section.append(bookTitle, bookAuthor, bookYear);
+    section.append(btnSection);
 
     if(isCompleted){
         btnSection.append(unfinishedBtn(), deleteBtn());
@@ -27,25 +28,24 @@ function makeBook(title, author, year, isCompleted){
         btnSection.append(finishedBtn(), deleteBtn());
     }
 
-    section.append(btnSection);
     return section;
 }
 
 function unfinishedBtn(){
-    return createBtn("btn_unfinished", "Belum Selesai Di Baca", "green", function(e){
-        unfinishedBook(e.target.parentElement.parentElement)
+    return createBtn("btn_unfinished", "Belum Selesai Di Baca", "green", function(event){
+        unfinishedBook(event.target.parentElement.parentElement)
     })
 }
 
 function finishedBtn(){
-    return createBtn("btn_finished", "Selesai Di Baca", "green", function(e){
-        finishedBook(e.target.parentElement.parentElement)
+    return createBtn("btn_finished", "Selesai Di Baca", "green", function(event){
+        finishedBook(event.target.parentElement.parentElement)
     })
 }
 
 function deleteBtn(){
-    return createBtn("btn_delete", "Hapus Buku", "red", function(e){
-        deleteBook(e.target.parentElement.parentElement)
+    return createBtn("btn_delete", "Hapus Buku", "red", function(event){
+        deleteBook(event.target.parentElement.parentElement)
     })
 }
 
@@ -54,8 +54,8 @@ function createBtn(btnclass, text, color, eventListener){
     button.innerText = text;
     button.classList = btnclass;
     button.classList = color;
-    button.addEventListener("click", function(e){
-        eventListener(e);
+    button.addEventListener("click", function(event){
+        eventListener(event);
     });
     return button;
 }
@@ -64,25 +64,32 @@ function storeBook(){
     const uncompletedBook = document.getElementById(ID_BOOK_UNCOMPLETED);
     const completedBook = document.getElementById(ID_BOOK_COMPLETED);
 
-    const bookTitle = document.getElementById("inputBookTitle").value;
-    const bookAuthor = document.getElementById("inputBookAuthor").value;
-    const bookYear = document.getElementById("inputBookYear").value;
-    const isCompleted = document.getElementById("inputBookIsComplete").checked;
+    const bookTitleVal = document.getElementById("inputBookTitle").value;
+    const bookAuthorVal = document.getElementById("inputBookAuthor").value;
+    const bookYearVal = document.getElementById("inputBookYear").value;
+    const isCompletedVal = document.getElementById("inputBookIsComplete");
 
-    const newBook = makeBook(bookTitle, bookAuthor, bookYear, isCompleted, false);
-    const bookObject = composeBookObject(bookTitle, bookAuthor, bookYear, false);
+    if (isCompletedVal.checked === true){
+        const newBook = makeBook(bookTitleVal, bookAuthorVal, bookYearVal, true);
 
-    newBook[BOOK_ID] = bookObject.id;
-    books.push(bookObject);
+        const bookObject = composeBookObject(bookTitleVal, bookAuthorVal, bookYearVal, true);
 
-    if(isCompleted){
+        newBook[BOOK_ID] = bookObject.id;
+        books.push(bookObject);
+
         completedBook.append(newBook);
-    } else {
-        uncompletedBook.append(newBook);
-    }
+        updateBook();
+    }else{
+        const newBook = makeBook(bookTitleVal, bookAuthorVal, bookYearVal, false);
 
-    uncompletedBook.append(newBook);
-    updateBook();
+        const bookObject = composeBookObject(bookTitleVal, bookAuthorVal, bookYearVal, false);
+
+        newBook[BOOK_ID] = bookObject.id;
+        books.push(bookObject);
+
+        uncompletedBook.append(newBook);
+        updateBook();
+    }
 }
 
 function finishedBook(bookElement){
@@ -92,8 +99,9 @@ function finishedBook(bookElement){
     const bookAuthor = bookElement.querySelector(".author").innerText.replace("Penulis : ","");
     const bookYear = bookElement.querySelector(".year").innerText.replace("Tahun : ", "");
 
-    const newBook = makeBook(bookTitle, bookAuthor, bookYear, true)
-    const book = findBook(bookElement[BOOK_ID])
+    const newBook = makeBook(bookTitle, bookAuthor, bookYear, true);
+
+    const book = findBook(bookElement[BOOK_ID]);
     book.isCompleted = true;
     newBook[BOOK_ID] = book.id;
 
