@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', function(){
     const formBook = document.getElementById('inputBook');
 
-    formBook.addEventListener('submit', function(event){
-        event.preventDefault();
+    formBook.addEventListener('submit', function(e){
+        e.preventDefault();
         storeBook();
-    });
+    })
 
     if(isStorageExist){
         loadDataFromStorage();
